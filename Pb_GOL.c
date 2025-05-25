@@ -135,7 +135,7 @@ void stergeStiva(Nod** varf)
     }
 }
 
-// TASK 2 - Functii pentru lista de coordonate
+// TASK 2 - Functii
 void adaugaCoordInLista(Coord** lista, int x, int y)
 {
     Coord* noua = (Coord*)malloc(sizeof(Coord));
@@ -259,6 +259,173 @@ void stergeStivaCuListeCoord(Nod** stiva) {
         Coord* lista = (Coord*)coord_data.ptr_val;
         stergeListaCoord(&lista);
     }
+}
+
+// TASK 3 - Structuri pentru arbore
+typedef struct arbore
+{
+    Celula *val;
+    struct arbore *stanga, *dreapta;
+} Node;
+
+// TASK 3 - Functii pentru arbore
+Node* creazaNod()
+{
+    Node* nodNou = (Node*)malloc(sizeof(Node));
+    nodNou->val = NULL;
+    nodNou->stanga = NULL;
+    nodNou->dreapta = NULL;
+    return nodNou;
+}
+
+void listaLaMatrice(Celula *lista, int n, int m, char matrice[][101])
+{
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++)
+            matrice[i][j] = '+';
+
+    Celula *curent = lista;
+    while (curent != NULL)
+    {
+        if (curent->x >= 1 && curent->x <= n && curent->y >= 1 && curent->y <= m)
+            matrice[curent->x][curent->y] = 'X';
+        curent = curent->urm;
+    }
+}
+
+void matriceLaLista(const char matrice[][101], int n, int m, Celula **lista)
+{
+    Celula *curent = *lista;
+    while (curent != NULL)
+    {
+        Celula *temp = curent;
+        curent = curent->urm;
+        free(temp);
+    }
+    *lista = NULL;
+
+    Celula **coada = lista;
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++) 
+        {
+            if (matrice[i][j] == 'X') 
+            {
+                Celula *noua = (Celula*)malloc(sizeof(Celula));
+                noua->x = i;
+                noua->y = j;
+                noua->urm = NULL;
+
+                if (*lista == NULL) 
+                {
+                    *lista = noua;
+                    coada = &(*lista)->urm;
+                } 
+                else 
+                {
+                    *coada = noua;
+                    coada = &noua->urm;
+                }
+            }
+        }
+    }
+}
+
+void regulaVeche(Node *rad, int n, int m, Celula *lista)
+{
+    char matrice[101][101], copie[101][101];
+    listaLaMatrice(lista, n, m, matrice);
+    memcpy(copie, matrice, sizeof(matrice));
+
+    for (int x = 1; x <= n; x++)
+    {
+        for (int y = 1; y <= m; y++)
+        {
+            int vecini = numaraVeciniVii(x, y, n, m, matrice);
+            if (matrice[x][y] == 'X')
+            {
+                if (vecini < 2 || vecini > 3) copie[x][y] = '+';
+            }
+            else
+            {
+                if (vecini == 3) copie[x][y] = 'X';
+            }
+        }
+    }
+
+    matriceLaLista(copie, n, m, &rad->val);
+}
+
+void regulaNoua(Node *rad, int n, int m, Celula *lista)
+{
+    char matrice[101][101], copie[101][101];
+
+    listaLaMatrice(lista, n, m, matrice);
+
+    memcpy(copie, matrice, sizeof(matrice));
+
+    for (int x = 1; x <= n; x++)
+    {
+        for (int y = 1; y <= m; y++)
+        {
+            int vecini = numaraVeciniVii(x, y, n, m, matrice);
+            if (vecini == 2) copie[x][y] = 'X';
+        }
+    }
+
+    matriceLaLista(copie, n, m, &rad->val);
+}
+
+void construiesteArbore(Node* nod, int adancimeActuala, int k, int n, int m)
+{
+    if (adancimeActuala >= k)
+    {
+        nod->stanga = NULL;
+        nod->dreapta = NULL;
+        return;
+    }
+
+    nod->stanga = creazaNod();
+    regulaNoua(nod->stanga, n, m, nod->val);
+    construiesteArbore(nod->stanga, adancimeActuala + 1, k, n, m);
+
+    nod->dreapta = creazaNod();
+    regulaVeche(nod->dreapta, n, m, nod->val);
+    construiesteArbore(nod->dreapta, adancimeActuala + 1, k, n, m);
+}
+
+void parcurgerePreordine(FILE *output, Node *rad, int n, int m)
+{
+    if (rad != NULL)
+    {
+        char matrice[101][101];
+        listaLaMatrice(rad->val, n, m, matrice);
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= m; j++)
+                fprintf(output, "%c", matrice[i][j]);
+            fprintf(output, "\n");
+        }
+        fprintf(output, "\n");
+        parcurgerePreordine(output, rad->stanga, n, m);
+        parcurgerePreordine(output, rad->dreapta, n, m);
+    }
+}
+
+void elibereazaArbore(Node* rad)
+{
+    if (rad == NULL) return;
+    elibereazaArbore(rad->stanga);
+    elibereazaArbore(rad->dreapta);
+
+    Celula *curent = rad->val;
+    while (curent != NULL)
+    {
+        Celula *temp = curent;
+        curent = curent->urm;
+        free(temp);
+    }
+    free(rad);
 }
 
 // MAIN FUNCTION
@@ -385,6 +552,32 @@ int main(int argc, const char* argv[])
             
             // Curatam memoria ramasa (daca exista)
             stergeStivaCuListeCoord(&stivaGeneratii);
+        }
+        else if (T == 3)
+        {
+            fscanf(input_file, "%d %d %d", &N, &M, &K);
+
+            Node* rad = creazaNod();
+            char a[101];
+            for (int e = 1; e <= N; e++)
+            {
+                fscanf(input_file, "%100s", a);
+                for (int j = 1; j <= M; j++)
+                {
+                    if (a[j - 1] == 'X')
+                    {
+                        Celula *noua = (Celula*)malloc(sizeof(Celula));
+                        noua->x = e;
+                        noua->y = j;
+                        noua->urm = rad->val;
+                        rad->val = noua;
+                    }
+                }
+            }
+
+            construiesteArbore(rad, 0, K, N, M);
+            parcurgerePreordine(output_file, rad, N, M);
+            elibereazaArbore(rad);
         }
         
         fclose(output_file);
