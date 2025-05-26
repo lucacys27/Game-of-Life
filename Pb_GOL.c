@@ -430,14 +430,17 @@ void afiseazaStivaGeneratii(Nod** stiva, int K, FILE* output_file)
     stergeStiva(&stivaAux);
 }
 
-void stocheazaSchimbariInStiva(int N, int M, const char matrice[][101], const char copie[][101], Nod** stiva) {
+void stocheazaSchimbariInStiva(int N, int M, const char matrice[][101], const char copie[][101], Nod** stiva) 
+{
     Coord* lista = construiesteListaSchimbari(N, M, matrice, copie);
     pushCoordList(stiva, lista);
 }
 
 // Funcție pentru curățarea completă a stivei cu eliberarea listelor de coordonate
-void stergeStivaCuListeCoord(Nod** stiva) {
-    while (*stiva != NULL) {
+void stergeStivaCuListeCoord(Nod** stiva) 
+{
+    while (*stiva != NULL) 
+    {
         Data coord_data = pop(stiva);
         Coord* lista = (Coord*)coord_data.ptr_val;
         stergeListaCoord(&lista);
@@ -447,25 +450,31 @@ void stergeStivaCuListeCoord(Nod** stiva) {
 // Task 4 - Functii
 
 // Construieste graful din matrice
-Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) {
+Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) 
+{
     Graph *g = (Graph*)malloc(sizeof(Graph));
     g->rows = rows;
     g->cols = cols;
 
     // Aloca spatiu pentru maparea nodurilor
     g->hartaNoduri = (int**)malloc((rows + 1) * sizeof(int*));
-    for(int i = 0; i <= rows; i++) {
+    for(int i = 0; i <= rows; i++) 
+    {
         g->hartaNoduri[i] = (int*)malloc((cols + 1) * sizeof(int));
-        for(int j = 0; j <= cols; j++) {
+        for(int j = 0; j <= cols; j++) 
+        {
             g->hartaNoduri[i][j] = -1;
         }
     }
 
     // Prima trecere: numara nodurile valide (X) si le asigneaza numere
     int numarNoduri = 0;
-    for(int i = 1; i <= rows; i++) {
-        for(int j = 1; j <= cols; j++) {
-            if(matrice[i][j] == 'X') {
+    for(int i = 1; i <= rows; i++) 
+    {
+        for(int j = 1; j <= cols; j++) 
+        {
+            if(matrice[i][j] == 'X') 
+            {
                 g->hartaNoduri[i][j] = numarNoduri++;
             }
         }
@@ -473,7 +482,8 @@ Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) {
 
     g->V = numarNoduri;
     
-    if(g->V == 0) {
+    if(g->V == 0) 
+    {
         g->E = 0;
         g->nodLaLinie = NULL;
         g->nodLaColoana = NULL;
@@ -486,9 +496,12 @@ Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) {
     g->nodLaColoana = (int*)malloc(g->V * sizeof(int));
 
     // Construieste maparea inversa
-    for(int i = 1; i <= rows; i++) {
-        for(int j = 1; j <= cols; j++) {
-            if(matrice[i][j] == 'X') {
+    for(int i = 1; i <= rows; i++) 
+    {
+        for(int j = 1; j <= cols; j++) 
+        {
+            if(matrice[i][j] == 'X') 
+            {
                 int numarNod = g->hartaNoduri[i][j];
                 g->nodLaLinie[numarNod] = i;
                 g->nodLaColoana[numarNod] = j;
@@ -498,26 +511,33 @@ Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) {
 
     // Aloca matricea de adiacenta
     g->a = (int**)malloc(g->V * sizeof(int*));
-    for(int i = 0; i < g->V; i++) {
+    for(int i = 0; i < g->V; i++) 
+    {
         g->a[i] = (int*)calloc(g->V, sizeof(int));
     }
 
     // A doua trecere: construieste muchiile
     g->E = 0;
-    for(int i = 1; i <= rows; i++) {
-        for(int j = 1; j <= cols; j++) {
-            if(matrice[i][j] == 'X') {
+    for(int i = 1; i <= rows; i++) 
+    {
+        for(int j = 1; j <= cols; j++) 
+        {
+            if(matrice[i][j] == 'X') 
+            {
                 int nodCurent = g->hartaNoduri[i][j];
 
                 // Verifica toti cei 8 vecini
-                for(int d = 0; d < 8; d++) {
+                for(int d = 0; d < 8; d++) 
+                {
                     int liniaNova = i + directiiX[d];
                     int coloanaNoua = j + directiiY[d];
 
                     if(liniaNova >= 1 && liniaNova <= rows && coloanaNoua >= 1 && coloanaNoua <= cols && 
-                       matrice[liniaNova][coloanaNoua] == 'X') {
+                       matrice[liniaNova][coloanaNoua] == 'X') 
+                    {
                         int nodVecin = g->hartaNoduri[liniaNova][coloanaNoua];
-                        if(nodVecin >= 0 && nodVecin < g->V && nodCurent != nodVecin && g->a[nodCurent][nodVecin] == 0) {
+                        if(nodVecin >= 0 && nodVecin < g->V && nodCurent != nodVecin && g->a[nodCurent][nodVecin] == 0) 
+                        {
                             g->a[nodCurent][nodVecin] = 1;
                             g->a[nodVecin][nodCurent] = 1;
                             g->E++;
@@ -533,32 +553,39 @@ Graph* creeazaGrafDinMatrice(const char matrice[][101], int rows, int cols) {
 }
 
 // Functia DFS_scan pentru parcurgerea unei componente conexe
-void scanareDFS(Graph *g, int vizitat[], int i, int componenta[], int *dimensiune) {
+void scanareDFS(Graph *g, int vizitat[], int i, int componenta[], int *dimensiune) 
+{
     vizitat[i] = 1;
     componenta[*dimensiune] = i;
     (*dimensiune)++;
 
-    for(int j = 0; j < g->V; j++) {
-        if(g->a[i][j] == 1 && vizitat[j] == 0) {
+    for(int j = 0; j < g->V; j++) 
+    {
+        if(g->a[i][j] == 1 && vizitat[j] == 0) 
+        {
             scanareDFS(g, vizitat, j, componenta, dimensiune);
         }
     }
 }
 
 // Functia principala DFS care gaseste toate componentele conexe
-int** parcurgereDFS(Graph *g, int **dimensiuniComponente, int *numarComponente) {
+int** parcurgereDFS(Graph *g, int **dimensiuniComponente, int *numarComponente) 
+{
     int componenteConexe = 0;
     int *vizitat = (int*)calloc(g->V, sizeof(int));
 
     int **componente = (int**)malloc(g->V * sizeof(int*));
     *dimensiuniComponente = (int*)calloc(g->V, sizeof(int));
 
-    for(int i = 0; i < g->V; i++) {
+    for(int i = 0; i < g->V; i++) 
+    {
         componente[i] = (int*)malloc(g->V * sizeof(int));
     }
 
-    for(int i = 0; i < g->V; i++) {
-        if(vizitat[i] == 0) {
+    for(int i = 0; i < g->V; i++) 
+    {
+        if(vizitat[i] == 0) 
+        {
             scanareDFS(g, vizitat, i, componente[componenteConexe], &(*dimensiuniComponente)[componenteConexe]);
             componenteConexe++;
         }
@@ -569,8 +596,9 @@ int** parcurgereDFS(Graph *g, int **dimensiuniComponente, int *numarComponente) 
     return componente;
 }
 
-// Functie pentru compararea a doi noduri dupa coordonate (linie, coloana)
-int comparaNoduri(Graph *g, int nod1, int nod2) {
+// Functie pentru compararea a doua noduri dupa coordonate (linie, coloana)
+int comparaNoduri(Graph *g, int nod1, int nod2) 
+{
     int linie1 = g->nodLaLinie[nod1];
     int coloana1 = g->nodLaColoana[nod1];
     int linie2 = g->nodLaLinie[nod2];
@@ -581,10 +609,14 @@ int comparaNoduri(Graph *g, int nod1, int nod2) {
 }
 
 // Functie pentru sortarea nodurilor dupa coordonate
-void sorteazaNoduriDupaCoordonate(Graph *g, int noduri[], int dimensiune) {
-    for(int i = 0; i < dimensiune - 1; i++) {
-        for(int j = 0; j < dimensiune - 1 - i; j++) {
-            if(comparaNoduri(g, noduri[j], noduri[j+1]) > 0) {
+void sorteazaNoduriDupaCoordonate(Graph *g, int noduri[], int dimensiune) 
+{
+    for(int i = 0; i < dimensiune - 1; i++) 
+    {
+        for(int j = 0; j < dimensiune - 1 - i; j++) 
+        {
+            if(comparaNoduri(g, noduri[j], noduri[j+1]) > 0) 
+            {
                 int temp = noduri[j];
                 noduri[j] = noduri[j+1];
                 noduri[j+1] = temp;
@@ -594,22 +626,23 @@ void sorteazaNoduriDupaCoordonate(Graph *g, int noduri[], int dimensiune) {
 }
 
 // Functie recursiva pentru gasirea lantului Hamiltonian cu backtracking
-int gasesteCalHamiltonian(Graph *g, int componenta[], int dimensiuneComp, int cale[], int pozitie, int folosit[]) {
-    if(pozitie == dimensiuneComp) {
-        return 1;
-    }
+int gasesteCalHamiltonian(Graph *g, int componenta[], int dimensiuneComp, int cale[], int pozitie, int folosit[]) 
+{
+    if(pozitie == dimensiuneComp) return 1;
 
-    for(int i = 0; i < dimensiuneComp; i++) {
+    for(int i = 0; i < dimensiuneComp; i++) 
+    {
         int nodCurent = componenta[i];
         
-        if(!folosit[nodCurent]) {
-            if(pozitie == 0 || g->a[cale[pozitie-1]][nodCurent] == 1) {
+        if(!folosit[nodCurent]) 
+        {
+            if(pozitie == 0 || g->a[cale[pozitie-1]][nodCurent] == 1) 
+            {
                 cale[pozitie] = nodCurent;
                 folosit[nodCurent] = 1;
 
-                if(gasesteCalHamiltonian(g, componenta, dimensiuneComp, cale, pozitie + 1, folosit)) {
+                if(gasesteCalHamiltonian(g, componenta, dimensiuneComp, cale, pozitie + 1, folosit))
                     return 1;
-                }
 
                 folosit[nodCurent] = 0;
             }
@@ -620,9 +653,12 @@ int gasesteCalHamiltonian(Graph *g, int componenta[], int dimensiuneComp, int ca
 }
 
 // Functie pentru gasirea unui lant Hamiltonian dintr-o componenta
-int obtineCalaleHamiltoniana(Graph *g, const int componenta[], int dimensiuneComp, int caleRezultat[]) {
-    if(dimensiuneComp <= 1) {
-        if(dimensiuneComp == 1) {
+int obtineCalaleHamiltoniana(Graph *g, const int componenta[], int dimensiuneComp, int caleRezultat[]) 
+{
+    if(dimensiuneComp <= 1) 
+    {
+        if(dimensiuneComp == 1) 
+        {
             caleRezultat[0] = componenta[0];
         }
         return dimensiuneComp;
@@ -630,7 +666,8 @@ int obtineCalaleHamiltoniana(Graph *g, const int componenta[], int dimensiuneCom
 
     // Sorteaza nodurile din componenta dupa coordonate
     int *componentaSortata = (int*)malloc(dimensiuneComp * sizeof(int));
-    for(int i = 0; i < dimensiuneComp; i++) {
+    for(int i = 0; i < dimensiuneComp; i++) 
+    {
         componentaSortata[i] = componenta[i];
     }
     sorteazaNoduriDupaCoordonate(g, componentaSortata, dimensiuneComp);
@@ -639,18 +676,20 @@ int obtineCalaleHamiltoniana(Graph *g, const int componenta[], int dimensiuneCom
     int *folosit = (int*)calloc(g->V, sizeof(int));
 
     // Incearca sa gaseasca o cale Hamiltoniasn incepand cu fiecare nod
-    for(int start = 0; start < dimensiuneComp; start++) {
+    for(int start = 0; start < dimensiuneComp; start++) 
+    {
         // Reseteaza vectorul folosit
-        for(int i = 0; i < g->V; i++) {
+        for(int i = 0; i < g->V; i++)
             folosit[i] = 0;
-        }
 
         int nodPlecare = componentaSortata[start];
         cale[0] = nodPlecare;
         folosit[nodPlecare] = 1;
 
-        if(gasesteCalHamiltonian(g, componentaSortata, dimensiuneComp, cale, 1, folosit)) {
-            for(int i = 0; i < dimensiuneComp; i++) {
+        if(gasesteCalHamiltonian(g, componentaSortata, dimensiuneComp, cale, 1, folosit)) 
+        {
+            for(int i = 0; i < dimensiuneComp; i++) 
+            {
                 caleRezultat[i] = cale[i];
             }
             
@@ -667,7 +706,8 @@ int obtineCalaleHamiltoniana(Graph *g, const int componenta[], int dimensiuneCom
     return -1;
 }
 
-void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) {
+void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) 
+{
     if (rad == NULL) return;
     
     char matrice[101][101];
@@ -675,9 +715,10 @@ void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) {
 
     Graph* g = creeazaGrafDinMatrice(matrice, n, m);
 
-    if(g->V == 0) {
+    if(g->V == 0)
         fprintf(output, "-1\n");
-    } else {
+    else 
+    {
         int *dimensiuniComponente;
         int numarComponente;
         int **componente = parcurgereDFS(g, &dimensiuniComponente, &numarComponente);
@@ -686,25 +727,28 @@ void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) {
         int *ceaMaiBunaCaleeGlobala = NULL;
 
         // Gaseste cea mai mare componenta conexa care are lant Hamiltonian
-        for(int i = 0; i < numarComponente; i++) {
+        for(int i = 0; i < numarComponente; i++) 
+        {
             int *caleaCurenta = (int*)malloc(dimensiuniComponente[i] * sizeof(int));
             int lungimeaCurenta = obtineCalaleHamiltoniana(g, componente[i], dimensiuniComponente[i], caleaCurenta);
 
-            if(lungimeaCurenta == dimensiuniComponente[i] && lungimeaCurenta > lungimeMaxima) {
+            if(lungimeaCurenta == dimensiuniComponente[i] && lungimeaCurenta > lungimeMaxima) 
+            {
                 lungimeMaxima = lungimeaCurenta;
                 if(ceaMaiBunaCaleeGlobala != NULL) free(ceaMaiBunaCaleeGlobala);
                 
                 ceaMaiBunaCaleeGlobala = (int*)malloc(lungimeMaxima * sizeof(int));
-                for(int j = 0; j < lungimeMaxima; j++) {
+                for(int j = 0; j < lungimeMaxima; j++)
                     ceaMaiBunaCaleeGlobala[j] = caleaCurenta[j];
-                }
             }
             free(caleaCurenta);
         }
 
-        if(lungimeMaxima > 0 && ceaMaiBunaCaleeGlobala != NULL) {
+        if(lungimeMaxima > 0 && ceaMaiBunaCaleeGlobala != NULL) 
+        {
             fprintf(output, "%d\n", lungimeMaxima - 1);
-            for(int i = 0; i < lungimeMaxima; i++) {
+            for(int i = 0; i < lungimeMaxima; i++) 
+            {
                 int nod = ceaMaiBunaCaleeGlobala[i];
                 // Convert to 0-based indexing for output
                 int linie = g->nodLaLinie[nod] - 1;
@@ -713,7 +757,9 @@ void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) {
                 if(i < lungimeMaxima - 1) fprintf(output, " ");
             }
             fprintf(output, "\n");
-        } else {
+        } 
+        else 
+        {
             fprintf(output, "-1\n");
         }
 
@@ -730,34 +776,31 @@ void parcurgerePreArboreGraf(FILE *output, Node *rad, int n, int m) {
 }
 
 // Functie pentru eliberarea memoriei
-void elibereazaGraf(Graph *g) {
+void elibereazaGraf(Graph *g) 
+{
     if(g == NULL) return;
     
-    if(g->a != NULL) {
-        for(int i = 0; i < g->V; i++) {
-            if(g->a[i] != NULL) {
+    if(g->a != NULL) 
+    {
+        for(int i = 0; i < g->V; i++)
+            if(g->a[i] != NULL)
                 free(g->a[i]);
-            }
-        }
         free(g->a);
     }
 
-    if(g->hartaNoduri != NULL) {
-        for(int i = 0; i <= g->rows; i++) {
-            if(g->hartaNoduri[i] != NULL) {
+    if(g->hartaNoduri != NULL) 
+    {
+        for(int i = 0; i <= g->rows; i++)
+            if(g->hartaNoduri[i] != NULL)
                 free(g->hartaNoduri[i]);
-            }
-        }
         free(g->hartaNoduri);
     }
 
-    if(g->nodLaLinie != NULL) {
+    if(g->nodLaLinie != NULL)
         free(g->nodLaLinie);
-    }
     
-    if(g->nodLaColoana != NULL) {
+    if(g->nodLaColoana != NULL)
         free(g->nodLaColoana);
-    }
 
     free(g);
 }
@@ -793,6 +836,7 @@ int main(int argc, const char* argv[])
         }
 
         int T, N, M, K; //Iitializare si citire variabile!
+        char tensor[1001][101][101], q = -1;
         fscanf(input_file, "%d", &T);
 
         if (T == 1)
@@ -848,18 +892,16 @@ int main(int argc, const char* argv[])
                     for (int x = 1; x <= N; x++)
                         for (int y = 1; y <= M; y++)
                             matrice[x][y] = copie[x][y]; //Noua matrice a fost creata!
+                    for (int x = 1; x <= N; x++)
+                        for (int y = 1; y <= M; y++)
+                            tensor[++q][x][y] = copie[x][y]; //Stocare 
                 }
               if (p==K) fprintf(output_file, "\n"); //Adaugarea spatiului de final!
             }
         }
         else if (T == 2)
         {
-            if (fscanf(input_file, "%d %d %d", &N, &M, &K) != 3) {
-                printf("Error reading N, M, K from file: %s\n", argv[i]);
-                fclose(input_file);
-                fclose(output_file);
-                continue;
-            }
+            fscanf(input_file, "%d %d %d", &N, &M, &K);
 
             char matrice[101][101];
             char copie[101][101];
