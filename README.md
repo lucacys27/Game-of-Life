@@ -2,42 +2,76 @@
 
 Salut! Am implementat Game of Life, un proiect care este format din 4 task-uri: folosind matrice (implementare normala); folosind stiva de liste pentru fiecare generatie (pentru stocare eficienta); folosind arbore binar (implementarea regulilor noului joc + parcurgere preordine) si gasirea lantului maxim Hamiltonian din fiecare valoare a nodului din arbore!
 
+## Compilare
+
+### Cu Makefile:
+- **Compilare:** `make`
+- **Rulare:** `make run`
+- **Curățare:** `make clean`
+
+### Fără Makefile (manual):
+
+### Odata ce au fost create toate fisierele din input si de ref (luate de pe proiectul principal)!
+gcc Pb_GOL.c
+./a.out InputData/input1.txt (...)
+
+## Checkerul checker-linux-amd64
+
+Proiectul include un checker si se ruleaza folosind comenzile mentionate mai sus!
+
+### Ce trebuie neaparat nevoie proiectul pentru a fi rulat?:
+- `valgrind`   
+- `cppcheck`  
+- `git`
+
+
 ## Structuri folosite
 
-`// Structuri pentru Task 2 (stiva)
+`
+// Structuri pentru Task 2 (stiva)
 typedef struct
 {
     void* ptr_val;  // Folosim void* pentru pointeri
     int i_val;
     char c_val;
-} Data;`
+} Data;
+`
 
-`typedef struct Nod
+`
+typedef struct Nod
 {
     Data val;
     struct Nod* next;
-} Nod;`
+} Nod;
+`
 
-`// Structură pentru coordonate - lista simplu înlănțuită (Task 2)
+`
+// Structură pentru coordonate - lista simplu înlănțuită (Task 2)
 typedef struct Coord
 {
     int x, y;
     struct Coord* next;
-} Coord;`
+} Coord;
+`
 
-`typedef struct celula
+`
+typedef struct celula
 {
     int x, y;
     struct celula *urm;
-} Celula;`
+} Celula;
+`
 
-`typedef struct arbore
+`
+typedef struct arbore
 {
     Celula *val;
     struct arbore *stanga, *dreapta;
-} Node;`
+} Node;
+`
 
-`// Structuri pentru Task 4 (graf)
+`
+// Structuri pentru Task 4 (graf)
 typedef struct {
     int V;        // nr. varfuri (noduri valide)
     int E;        // nr. muchii
@@ -46,7 +80,8 @@ typedef struct {
     int **hartaNoduri;   // mapare din coordonate (i,j) in numarul nodului
     int *nodLaLinie;  // mapare din numarul nodului in linia sa
     int *nodLaColoana;  // mapare din numarul nodului in coloana sa
-} Graph;`
+} Graph;
+`
 
 ## Task 1 -- Implementarea jocului
 
