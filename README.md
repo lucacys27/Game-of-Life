@@ -12,8 +12,11 @@ Salut! Am implementat Game of Life, un proiect care este format din 4 task-uri: 
 ### Fără Makefile (manual):
 
 ### Odata ce au fost create toate fisierele din input si de ref (luate de pe proiectul principal)!
+
+```cpp
 gcc Pb_GOL.c
 ./a.out InputData/input1.txt (...)
+```
 
 ## Checkerul checker-linux-amd64
 
@@ -27,7 +30,7 @@ Proiectul include un checker si se ruleaza folosind comenzile mentionate mai sus
 
 ## Structuri folosite
 
-`
+```cpp
 // Structuri pentru Task 2 (stiva)
 typedef struct
 {
@@ -35,42 +38,42 @@ typedef struct
     int i_val;
     char c_val;
 } Data;
-`
+```
 
-`
+```cpp
 typedef struct Nod
 {
     Data val;
     struct Nod* next;
 } Nod;
-`
+```
 
-`
+```cpp
 // Structură pentru coordonate - lista simplu înlănțuită (Task 2)
 typedef struct Coord
 {
     int x, y;
     struct Coord* next;
 } Coord;
-`
+```
 
-`
+```cpp
 typedef struct celula
 {
     int x, y;
     struct celula *urm;
 } Celula;
-`
+```
 
-`
+```cpp
 typedef struct arbore
 {
     Celula *val;
     struct arbore *stanga, *dreapta;
 } Node;
-`
+```
 
-`
+```cpp
 // Structuri pentru Task 4 (graf)
 typedef struct {
     int V;        // nr. varfuri (noduri valide)
@@ -81,7 +84,7 @@ typedef struct {
     int *nodLaLinie;  // mapare din numarul nodului in linia sa
     int *nodLaColoana;  // mapare din numarul nodului in coloana sa
 } Graph;
-`
+```
 
 ## Task 1 -- Implementarea jocului
 
